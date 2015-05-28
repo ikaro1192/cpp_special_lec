@@ -12,4 +12,4 @@ html: $(HTML) index
 	pandoc $< -s -c $(CSS)  -o $(BUILD_DIR)/$@
 
 index: index.html
-	mv index.html $(BUILD_DIR)/index.html
+	cp index.html $(BUILD_DIR)/index.html
