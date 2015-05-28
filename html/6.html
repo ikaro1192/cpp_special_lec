@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../kouza.css" type="text/css" />
+</head>
+<body>
+<h1 id="クラス">クラス</h1>
+<p>今までintやstd::string等予め定義されている型を使ってきた。 今回はオリジナルの型を作ることのできる文法であるクラスの基礎的な部分を学ぶ。</p>
+<h3 id="この章で学ぶこと">この章で学ぶこと</h3>
+<ul>
+<li>複数のデータをわかりやすい単位にまとめることができる</li>
+<li>クラスとインスタンスの違いを理解し説明できる</li>
+</ul>
+<h2 id="クラスの基礎">クラスの基礎</h2>
+<p>先ほど成績管理システムを例に出した。 これをもう少し拡張してみよう。 具体的には名前、出席番号、点数をペアにできたら便利だ。 今までの知識ではたぶん以下のようなコードになるだろう</p>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;string&gt;
+ 
+int main(){
+     
+    //三人分のデータ
+    const int StudentNumber = 3;
+ 
+    std::string name[StudentNumber];
+    int attendanceNumber[StudentNumber];
+    int score[StudentNumber]; 
+ 
+    for(int i=0 ; i&lt; StudentNumber ; ++i){
+        name[i] = &quot;Hoge太郎&quot;; 
+        attendanceNumber[i]=i;
+        score[i]=i;
+    }
+    for(int i=0;i&lt;StudentNumber;++i){
+        std::cout &lt;&lt; name[i] &lt;&lt; &quot;(&quot; &lt;&lt; attendanceNumber&lt;&lt; &quot;)&quot; &lt;&lt; score &lt;&lt;std::endl;
+    }
+    return 0;
+}</code></pre>
+<p>このように一応できないことはない。 しかし、nameとAnattendanceNumberとscoreはまとめてStudentData などの名前を付けられそうに見えないだろうか? 前回名前付けの重要性を学んだ。 ここでもこのまとめられそうなデータに名前を付けてしまえば、わかりやすさ、再利用性、バグを減少させることが可能だと考えられる。 そのためにC++では複数の変数(や関数)をまとめ名前を付けることができるクラスという機能が存在する。 言ってしまえばオリジナルの型を作る文法である。 この例では成績管理だが、 ゲームでも敵の座標と弾の種類,名前など複数の値をまとめて管理したいことが多くあるのは容易に想像できるだろう。 とりあえずサンプルをあげる。</p>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;string&gt;
+ 
+//生徒の情報をあらわすクラス
+class StudentData{
+public:
+    //公開メンバ
+    std::string name;
+    int attendanceNumber;
+    int score;
+ 
+};//←「;」を忘れない!!
+ 
+int main(){
+     
+    //StudentData型のdataという変数(インスタンスorオブジェクトとも言う)を作る(インスタンス化)
+    StudentData data;
+ 
+    //メンバ変数には「変数名.メンバ名」でアクセスできる
+    //代入が可能
+    data.name=&quot;山田 太郎&quot;;
+    data.attendanceNumber=12;
+    data.score=74;
+     
+    //表示
+    std::cout &lt;&lt;&quot;名前：&quot; &lt;&lt; data.name &lt;&lt; std::endl;
+    std::cout &lt;&lt;&quot;出席番号：&quot;&lt;&lt; data.attendanceNumber &lt;&lt; std::endl;
+    std::cout &lt;&lt;&quot;テストの点数：&quot;&lt;&lt; data.score &lt;&lt; std::endl;
+ 
+    //すべてがコピーされる(があまりすべきでない)
+    StudentData data2=data;
+    //もちろん書き換えもできる
+    data.score=14;
+ 
+    //表示
+    std::cout &lt;&lt;&quot;名前：&quot; &lt;&lt; data2.name &lt;&lt; std::endl;
+    std::cout &lt;&lt;&quot;出席番号：&quot;&lt;&lt; data2.AnattendanceNumber &lt;&lt; std::endl;
+    std::cout &lt;&lt;&quot;テストの点数：&quot;&lt;&lt; data2.score &lt;&lt; std::endl;
+ 
+    return 0;
+}</code></pre>
+<p>さっそくコードを解説していこう。</p>
+<pre><code>class StudentData{
+//～ほにゃらら
+};</code></pre>
+<p>ここではStudentDataというクラス(型)を定義している。 これは名前のとおり生徒のデータをあらわすクラスだ。 次に現れた「public:」というものだが、これは以下にあるものをすべて公開しますということを表している(あとで詳しく説明)。 その後にStudentは 「name」などデータを入れる変数(クラスのメンバである変数ということでメンバ変数という。 変数だけでなく関数を入れることも可能) を持つということを定義している。 ただしこれだけだと型の定義だけだ。 変数ではないので注意してほしい。 ここではあくまでこういうようなデータを入れられる型を定義しましたよということなのだ。 さて、クラスを定義したはいいが定義だけでは何も使えない。 実際に使うには変数として宣言しなくてはならない。 これをしているのが「StudentData data;」という部分だ。 ここは普通の変数と大して変わらない。 ただ、クラスの場合はこの変数を宣言する操作をインスタンス化と呼ぶことが多い。 またインスタンス化できたもののことを変数のかわりにインスタンスとかオブジェクト(こちらはクラスをさすこともある) とか呼ぶ。 用語はどうでもいいのだが、自分で調べる際に困ると思うので一応書いておく。 メンバに代入するときは</p>
+<p>のように「.」を用いてアクセスする。 表示するときも同様に「.」を使ってアクセスする。 また、サンプルの</p>
+<p>ように全要素を代入することによってコピーすることもできる(しかしこれは基本的にするべきではない)</p>
+<h2 id="演習問題">演習問題</h2>
+<ul>
+<li>クラスを用いて下記要件を満たす3人分の成績を管理する以下のようなシステムを作れ。</li>
+</ul>
+<p>1.最初に全員分のデータを入力させる。 2.referと入力する→その後出席番号を入力するとその人の名前と点数を表示する。 3.changeと入力する→出席番号で編集する人を選び、編集 4.endと入力する→終了</p>
+</body>
+</html>

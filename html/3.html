@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../kouza.css" type="text/css" />
+</head>
+<body>
+<h1 id="入力と制御構造">入力と制御構造</h1>
+<p>この章では入力を受け取る方法、 また、プログラムの流れを制御する方法を学ぶ。 今回の部分は非常に大切なのでよく理解してほしい。</p>
+<h3 id="この章でまなぶこと">この章でまなぶこと</h3>
+<ul>
+<li>std::cin</li>
+<li>if</li>
+<li>for</li>
+<li>while</li>
+</ul>
+<h3 id="この章の目標">この章の目標</h3>
+<ul>
+<li>入力に応じて適切な出力を返すプログラムを作れる</li>
+<li>繰り返し処理のメリットを理解し使うことができる</li>
+</ul>
+<h2 id="入力">入力</h2>
+<p>プログラムではユーザから入力をうけとりそれによって、 プログラムの挙動を変えるということが多く存在する。 (ファイル名を入力してもらってそのファイルを開く、キーでキャラクターが移動するetc...) そこでユーザーから入力を受け取るという処理を見る。 まずは例のごとく以下のコードを入力して実行してみてほしい。 途中で止まって入力を求められると思うので数字を入力してエンターを押せば先に進む。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    //入力処理
+    int input;//初期値が決められず、また入力時に代入するので変数
+    std::cout &lt;&lt; &quot;年齢を入力してください&quot; &lt;&lt; std::endl;
+    std::cin &gt;&gt; input;//inputに入力された数値を代入
+    const int age = input;//変更できないようにconst変数に移す
+
+    //出力   
+    std::cout &lt;&lt; &quot;へぇ～あなたは&quot;&lt;&lt; age &lt;&lt; &quot;歳なんですか。&quot; &lt;&lt; std::endl;    
+
+    return 0;
+}</code></pre>
+<p>コードを見ればすぐにわかると思うが、std::cinで入力した数字をageに入れている。 また、cinでinputに入力された値が安全に、またわかりやすい名前で処理できるようにageというconst変数に移している。</p>
+<h2 id="if文">if文</h2>
+<p>まずは入力された値が2かどうかを判定するという単純なプログラムを考えよう。 これはおそらく今までの知識では実現不可能だ。 そこで処理の流れを条件によって変えるif文というものを用いる。 まずはサンプルコードを示す。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+
+    //ここで2かどうか判定(if文)
+    if (input==2){
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>注目して欲しい部分はif文だ。if文は以下のように分解できる。</p>
+<pre><code>if (条件式){
+    条件式が正しかったら実行する内容
+}</code></pre>
+<p>まずは条件式についてみてみよう。 サンプルでは「input==2」という部分にあたる。 この式では2と等しいかどうかを判定している。 「==」は右辺と左辺が等しかった場合は通常bool型のtrueが, 等しくない場合はfalseが計算結果になる。ということになっている。 また計算するということを以下では評価すると言うことがある。 これだけでは抽象的で分かりずらいだろう。そこでinputが2と5の場合を例にとって説明する。</p>
+<h4 id="in2の場合">(i)n=2の場合</h4>
+<p>1.inputに2が入り「2==2」となる。 2.次に2==2が評価されるわけだがこれは等しいのでtrueとなる。</p>
+<h4 id="iin5の場合">(ii)n=5の場合</h4>
+<p>1.inputに5が入り「5==2」となる。 次に5==2が評価されるわけだがこれは等しくないのでfalseとなる。</p>
+<p>そして最終的な計算結果がtrue(あるいは正の数)だった場合は(今回の例だとi)条件式以下のブロック({}内)が実行される。 このように左辺と右辺を比較するようなもの(比較演算子)はほかにはたとえば 以下のようなものがある。</p>
+<table border="1">
+<tr>
+<th colspan="2">
+比較演算子の例
+</th>
+</tr>
+<tr>
+<th>
+演算子
+</th>
+<th>
+trueとなる場合
+</th>
+</tr>
+<tr>
+<td>
+==
+</td>
+<td>
+左辺と右辺が等しい
+</td>
+</tr>
+<tr>
+<td>
+!=
+</td>
+<td>
+左辺と右辺が等しくない
+</td>
+</tr>
+
+<tr>
+<td>
+&lt;
+</td>
+<td>
+左辺が右辺より小さい(未満)
+</td>
+</tr>
+
+<tr>
+<td>
+&gt;
+</td>
+<td>
+左辺が右辺より小さい
+</td>
+</tr>
+
+<tr>
+<td>
+&lt;=
+</td>
+<td>
+左辺が右辺以下
+</td>
+</tr>
+
+<tr>
+<td>
+&lt;=
+</td>
+<td>
+左辺が右辺以上
+</td>
+</tr>
+</table>
+<p><br><br></p>
+<p>条件式で忘れやすい部分は条件式を必ず()で囲む事だ。従って以下のプログラムはコンパイルエラーとなる。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+
+    if input==2{//()を付け忘れている
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>また気をつけて欲しいのが<strong>=ではなく、==である点</strong>だ。 これは間違いやすく以下のようなミスが発生しやすい。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+
+    if (input=2){
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>これを実行してみるとわかるようにnは2ではないのにも関わらず{}内が実行されてしまう。 これはどういうことだろうか？あくまで=は代入の意味しかないのだ。 計算結果は代入された値になる。 先ほど説明したように正の値だった場合は正しいと扱われるので常に正となってしまうわけだ。 これを未然に防ぐ方法は変数をconstにしてしまうことだ。 そうすれば誤って代入したときはコンパイルエラーとなる。 従ってよりベターなコードは以下のようになる。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+    const int n = input;//const変数に移す
+
+    //n=2にするとコンパイルエラー
+    if (n==2){
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>さて次は今のプログラムを改造して入力された値が2かそれ以外かを判定するように変えよう。そうするには以下のようにすれば良い。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+    const int n=input;
+
+    if ( n==2 ){
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }else{
+        std::cout &lt;&lt; &quot;それ以外です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>前回と大きく変わったところは}else{}という部分だ。elseのブロックはif文の条件式が正しくなかったら実行されるという点だ。</p>
+<p>また、2以上5未満かどうかを判定したい時などがあるだろう。そういうときは「&amp;&amp;」をもちいて以下のように書く。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot; &lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+    const int n = input;//const変数に移す
+
+    if ( (n&gt;=2) &amp;&amp; (n&lt;5) ){
+        std::cout &lt;&lt; &quot;2以上5未満です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>とくに説明することはないと思う。&amp;&amp;が「かつ」を表しているだけだ。ちなみに「または」の場合は「||」を利用する。</p>
+<p>また、はいかいいえ以外にも複数のパターンわけをしたいこともあるだろう。 そういうときはelse ifを用いる。 たとえば2かあるいは3、それ以外で分岐するプログラムは以下のようになる。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    std::cout &lt;&lt; &quot;判定する値を入力してください。&quot;　&lt;&lt; std::endl;
+
+    int input;
+    std::cin &gt;&gt; input;
+    const int n=input;
+
+    if ( n==2 ){
+        std::cout &lt;&lt; &quot;2です&quot; &lt;&lt; std::endl;
+    }else if( n==3 ){
+        std::cout &lt;&lt; &quot;3です&quot; &lt;&lt; std::endl;
+    }else{
+        std::cout &lt;&lt; &quot;それ以外です&quot; &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>よって終的なif文の構文は以下のようになる。</p>
+<pre><code>if (条件式1){
+        条件式1が正しかったら実行する内容
+}else if(条件式2){
+        条件式2が正しかったら実行する内容
+}
+・
+・
+・
+}else if(条件式n){
+        条件式nが正しかったら実行する内容
+}else{
+        すべての条件式を満たさなかったとき実行する内容
+}</code></pre>
+<h2 id="forループ">forループ</h2>
+<p>今度は0〜99まで出力するプログラムを作って欲しい。...たぶんしたくないだろう。 (したいと思った人はプログラミングに向いてないかもしれない...猛反省して必要がない場合は二度と2回以上同じことを繰り返さないことを心にちかおう!) そんな面倒なことは人間のすることではない。 コンピュータにやらせてしまおう。 それにはfor文というものを利用して以下のように書く。</p>
+<pre><code>#include&lt;iostream&gt;
+
+int main(){
+
+    for(int i=0;i&lt;100;++i){
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+<p>forの中を0〜99回繰り返している。 この繰り返す処理のこと<strong>をループ</strong>という。 今何回目かというのはプログラムを見ればわかると思うが、iという変数に入っている。 さてforループについて説明する前にいくつか説明してしまおう。 forループの中に見慣れない</p>
+<pre><code>++i;</code></pre>
+<p>というのがあるがこれは</p>
+<pre><code>i=i+1;</code></pre>
+<p>と等しい。単なる略記記号だ。また「i++;」という表記も見かける。 これも(今の段階では)上のようなものと等しいと考えて差し支えない。 ただし、++iのほうが一般にパフォーマンスがいいので利用した。 まあ、int型に対しては好みの記法を使えばいいと思う。</p>
+<p>さて、forの説明に入ろう。今回のサンプルでは具体的にどういう処理がされているかというと以下のようになっている</p>
+<ol style="list-style-type: decimal">
+<li>int i=0が実行される。</li>
+<li>i&lt;100が計算、つまり0&lt;100が計算される。</li>
+<li>(2)の条件が正しかったので「std::cout &lt;&lt; i &lt;&lt; std::endl;」が実行される。</li>
+<li>++iが実行される。(iは1になる)</li>
+<li>i&lt;100が計算、つまり1&lt;100が計算される。</li>
+<li>(5)の条件が正しかったので「std::cout &lt;&lt; i &lt;&lt; std::endl;」が実行される。</li>
+<li>++iが実行される。<中略></li>
+<li>i++が実行されてiが99から100になる。</li>
+<li>i&lt;100が計算、つまり100&lt;100が計算される。 10.(9)はfalseなのでループを抜ける。</li>
+</ol>
+<p>つまりforの一般的な書式は以下のようになっている。</p>
+<pre><code>for( 初期設定式; 条件式; 再設定式 ){
+        ループさせる処理
+}</code></pre>
+<p>最初に初期設定式が評価され、条件式が偽になるまで再設定式を実行しつつループを続けるというものだ。 また、なぜ1からではなく0からはじめるかということだが、これはプログラミングをする上で非常に都合がいいからだ。</p>
+<h2 id="whileループ">whileループ</h2>
+<p>また回数ではなくユーザが例えば「end」を入力するまでループし続けるというプログラムを書きたいこともあるだろう。 そいうときは以下のようなプログラムにすれば良い。</p>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;string&gt;
+
+ int main(){
+
+     while(true){
+         std::cout&lt;&lt;&quot;endを入力すれば終了&quot;&lt;&lt;std::endl;   
+
+         //文字列型変数(std::string)の宣言
+         std::string input;
+
+         std::cin &gt;&gt; input;
+         const std::string command = input;
+
+         if (command==&quot;end&quot;){
+             break;//ループを抜ける
+         }  
+     }
+
+     return 0;
+ }</code></pre>
+<p>新しい部分はstd::stringとwhileそしてbreakだろう。まずはstd::stringから説明していく。 といってもそこまで多く説明する必要はなくこれは文字列を入れることのできる型というだけだ。 stringをincludeする必要があるがあとは基本的にintやdoubleと同じように扱える。 本題はwhileのほうだ。</p>
+<pre><code>while(条件式){
+        ループさせる処理
+}</code></pre>
+<p>whileはforよりさらに単純で条件式が正しければループの内容を実行する。 今回は条件をtrueにしているので永久にループし続ける(無限ループ)ようになっている。 しかしそれだけでは永久に終わらないのでif文でcommandがendになったらbreakを呼ぶようにしている。 そしてコメントに書いてあるようにbreakでループを抜けることが出来る。 これはforでも同じだ。 (ちなみにこのソースコードを読んでconst変数commandに違和感を感じたなら、 たぶんそれは正しい。これについては次回詳しく解説する)</p>
+<h2 id="演習問題">演習問題</h2>
+<ul>
+<li>時間(24h)を入力として受け取り時間帯によって「おはようございます」、「こんにちは」、「こんばんは」と表示するプログラムを作れ。</li>
+<li>年齢を尋ね18歳以下の場合「購入できません」と出力するプログラムを作れ</li>
+<li>0からユーザが入力した値までの2乗の和をループを用いて計算し表示するプログラムを作れ。</li>
+<li>0から入力された値までの3の倍数を出力するプログラムを作れ。(できれば複数の解答を考えること)</li>
+<li>10個の数字の入力を受け取りそのうちの最大値と最小値を出力するプログラムを作れ</li>
+<li>ユーザから数値nを受け取り、n次の単位行列を出力するプログラムを作れ。(ヒント:forを2重にする)</li>
+<li>三辺の長さがすべて10以下の整数で周囲の長さが24である直角三角形を求めるプログラムを作れ(★)</li>
+<li>whileを用いて0〜100までを出力するプログラムを作れ。</li>
+<li>ユーザに「BreakFirst」,「bath」,「end」いずれかのコマンドを入力させ、それにおおじて適切な動作(各自考えること。ただしendを選択するまでは終わらない。それ上記のコマンドがきたら「そのようなコマンドは存在しません」と出力すること)をさせるプログラムを作れ</li>
+<li>利率と元金,最終金額を入力として受け取り、福利法で計算したとき貯金額が何年後に最終金額を超えるか出力するプログラムを作れ。なお「新元金＝元金＋元金×利率」という漸化式で求められる。(★)</li>
+</ul>
+</body>
+</html>
