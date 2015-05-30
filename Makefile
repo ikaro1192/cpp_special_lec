@@ -1,4 +1,3 @@
-
 SRC_DIR=.
 BUILD_DIR=html
 
@@ -9,7 +8,7 @@ HTML=$(MD_FILE:.md=.html)
 html: $(HTML) index
 
 %.html: %.md
-	pandoc $< -s -c $(CSS)  -o $(BUILD_DIR)/$@
+		pandoc $< -s -c $(CSS)  -o $(BUILD_DIR)/$@
 
 index: index.html
-	cp index.html $(BUILD_DIR)/index.html
+		cp index.html $(BUILD_DIR)/index.html
