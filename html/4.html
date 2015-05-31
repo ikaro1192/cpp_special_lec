@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../kouza.css" type="text/css" />
+</head>
+<body>
+<h1 id="スコープと関数">スコープと関数</h1>
+<p>この章ではある程度の規模のプログラムを扱う上で必須となってくる関数およびその周辺の概念について学ぶ。</p>
+<h3 id="この章でまなぶこと">この章でまなぶこと</h3>
+<ul>
+<li>ブロックスコープの概念</li>
+<li>関数</li>
+<li>プロトタイプ宣言</li>
+<li>関数のオーバーロード</li>
+</ul>
+<h3 id="この章の目標">この章の目標</h3>
+<ul>
+<li>関数を定義し使うことができる</li>
+</ul>
+<h2 id="変数とブロックスコープ">変数とブロックスコープ</h2>
+<p>変数にはスコープ(変数が生きている範囲)がある。スコープ内で変数の宣言が見つかるとそこで変数は作られ、 そしてスコープから抜けると変数は解体される。(変数の寿命) では具体的にスコープの範囲はどこなのだろうか? ここでは一番基本的なブロックスコープについて解説する。 それは非常に単純だ。 ブロック「つまり{}」で囲まれた範囲がスコープとなる 以下のサンプルが必要なことをすべて示している。</p>
+<pre><code>#include&lt;iostream&gt;
+
+ int main(){
+
+     int hoge=2;
+     int foo=4;
+     std::cout &lt;&lt; hoge &lt;&lt; std::endl;
+     std::cout &lt;&lt; foo &lt;&lt; std::endl;
+
+     //forなどがないが立派なブロック
+     {
+         int hoge=4;
+         int bar=2;
+
+         foo=3;
+         std::cout &lt;&lt; hoge &lt;&lt; std::endl;
+         std::cout &lt;&lt; foo &lt;&lt; std::endl;
+     }
+
+     //bar=1;//コメントを外すとエラー
+     std::cout &lt;&lt; hoge &lt;&lt; std::endl;
+     std::cout &lt;&lt; foo &lt;&lt; std::endl;
+
+     return 0;
+ }</code></pre>
+<p>まず、hogeのようにスコープ内のスコープに同じ変数がある場合内側の変数が優先(逆に外側のスコープの変数が隠蔽さ)される。 当然、スコープを抜けると外側のスコープになるので元に戻る。 また、fooのように今のスコープに 変数が宣言されていない場合一つ外側のスコープの変数にアクセスされることになる。 しかし、barのように外側のスコープは内側のスコープにアクセスできない。 したがって当然if文やfor文に続くブロック内で定義した変数も外のスコープからは見えないので注意してほしい。 この性質を利用して{}で囲み変数名の衝突をさけるテクニックがある。これは次に説明する関数の 話にもつながっていく。</p>
+<h2 id="関数">関数</h2>
+<p>以上でプログラミングの基本はすべて終了した。(チューリング完全になっている) ではもう学ぶことはないのだろうか? 残りは極論すればいかにうまく名前をつけるか(あるいは引きはがすか)ということである。 なぜ名前付けが重要なのだろうか？それはプログラミング言語とは何か?という問いを考えてみればわかる。 コンピュータ内部ではすべて0と1で扱われる。これでは扱いづらいのでそれに名前を付けて扱いやすくしたのがプログラミング言語だ。 また前回までで意味のある変数名を付けることでプログラムがわかりやすくなるということを話した。 このようにできるだけプログラムに名前を付けることができればよりわかりやすいプログラムにすることができると予想できる。 また、名前を付ければ理解しやすくなり人に伝えやすくなるのだ。 というわけで次は処理に名前をつけることを学ぶ。 初めは難しく感じ、使い方がつかめないかもしれないが積極的に使っていくことでそのうちわかってくるだろう 例えば0からnまでの和を求め出力するプログラムを考えよう。流れは以下のようになっている。</p>
+<ol style="list-style-type: decimal">
+<li>入力</li>
+<li>和を求める</li>
+<li>出力</li>
+</ol>
+<p>しかしコード上にはコメントでしか和を求めるということを明示することが今までのところできない。 この和を求めるという<strong>操作に名前をつける文法が関数の定義</strong>という形で用意されている。たとえばコードは以下のようになる。</p>
+<pre><code>#include&lt;iostream&gt;
+
+//0からEndNumberまでの和を求める関数
+int sum(int EndNumber){
+
+    //計算結果を入れる変数
+    int result = 0;
+
+    for(int i=0; i&lt;=EndNumber; ++i){
+        result+=i;
+    }
+
+    //returnで結果を返す
+    return result;
+}
+
+int main(){
+
+    std::cout &lt;&lt; &quot;nの値を入力してください。&quot;&lt;&lt; std::endl;
+    int input;
+    std::cin &gt;&gt; input;
+    const int n = input;
+
+    //関数の実行結果をSumResultに入れる
+    const int SumResult = sum(n);
+
+    //出力
+    std::cout &lt;&lt; &quot;0からnまでの和は &quot; &lt;&lt; SumResult &lt;&lt; &quot;です&quot; &lt;&lt; std::endl;
+
+}</code></pre>
+<p>さて関数は「int sum(int EndNumber)」という形で定義されている。 コメントを見ればわかるようにこれは「0からEndNumberまでの和を求める」関数だ。 ここでいくつか用語を定義しておこう。 関数に渡す部分は<strong>引数(パラメータ)</strong>、関数が返した結果を<strong>返り値(戻り値)</strong>という。 つまり一般に関数の定義は</p>
+<pre><code> 返り値の型 関数名(引数1,引数2,...){ //～処理～ return (返す値); }
+ </code></pre>
+<p>というものになる。 たとえば今回は返り値の型がint,引数が一つでintであるsumという関数ということになる。 forループの中身はただ足しているだけなので説明は要らないだろう。 そして最後のreturnだがこれは結果を返している。 ここまでの話で実は今までも関数を定義していたことに気づいた人がいるだろう。 そう。実はmainは関数だったのだ。 ただしmain関数は特殊でプログラムで一番最初に呼ばれる関数ということになっている。 また、返り値はどこに返されるのかというと一般にOSに返す。 さて定義した関数を呼び出しているのは</p>
+<pre><code>const int SumResult = sum(n); </code></pre>
+<p>という部分だ。 sumという関数が実行されその結果がSumResultに代入される。 この時にnを渡している。 この渡すもののことを先ほど定義したように引数(あるいはパラメータ)と呼ぶ なお、定義側の引数(EndNumber)を仮引数、使う側で渡している引数(n)を実引数と呼ぶ。 ちなみにこのEndNumberとnはsum関数が呼び出されたときにEndNumberにnの値が代入されるので、 値が同じになるがその後はまったく別のものとして扱われるので、同じnという名前にしても問題ない。 また今回は変数に入れているがsumは数値を返しているだけなので、 当然直接</p>
+<pre><code>std::cout &lt;&lt; &quot;0からnまでの和は &quot; &lt;&lt; sum(n) &lt;&lt; &quot;です&quot; &lt;&lt; std::endl;</code></pre>
+<p>のように表示することもできる。 さて今まで書いてきたmain関数には引数がない(実はmain関数には引数があるバージョンも存在する)もちろんこのように引数がない関数を定義することも可能だ。 次はさらに関数化していこう。おそらく最終的には(これはやりすぎだが)以下のサンプルのようになる。 (さっきのをコピペして関数の中に入れるだけでよい)</p>
+<pre><code>#include&lt;iostream&gt;
+ 
+//入力を受ける関数(引数なし)
+int input(){
+    std::cout &lt;&lt; &quot;nの値を入力してください。&quot;&lt;&lt; std::endl;
+    int input;
+    std::cin &gt;&gt; input;
+    return input;
+    }
+ 
+//EndNumberまでの和を求める関数
+int sum(int EndNumber){
+    //計算結果を入れる変数
+    int result=0;
+     
+    for(int i=0;i&lt;=EndNumber;++i){
+        result+=i;
+    }
+ 
+    //returnで結果を返す
+    return result;
+}
+ 
+//出力する関数
+void output(int SumResult){
+    std::cout &lt;&lt; &quot;0からnまでの和は &quot; &lt;&lt; SumResult &lt;&lt; &quot;です&quot; &lt;&lt; std::endl;
+    return;//何も返さない
+}
+ 
+int main(){
+ 
+    const int InputData = input();
+    const int SumResult=sum(InputData);
+    output(SumResult);
+ 
+}</code></pre>
+<p>ここで見てほしいのは、引数、返り値をもつ関数(sum),返り値のみを持つ関数(input),引数のみを 持つ関数(output)の三種類があるということだ。 output関数のvoidというのはどんな型でもない型、つまり返り値なしということをあらわしている。 したがってreturnではなにも返していない。</p>
+<p>ここまでするとひとつのことが導かれ、またひとつの問題が出てくる。 導かれることというのは定義した関数はどこで呼んでもいい、 つまり今までは処理をコピペしていたのがコピペせずとも必要なところで定義した関数を呼べばいい(たとえば数字を入力させたいときは input関数を呼ぶ) そうすれば引数さえ正しく指定すればバグがなくその部分利用することが出来る(もちろん関数が正しく実装されていれば) 非常に見通しがよくなった気がしないだろうか? また、これは処理を探してそれがいちいち内部で何をしているのか理解しなくてもよいということである。 これで引数と結果さえ知っていればいつでもどこでもそして誰でも使うことが できるようになった。 このように関数化するとプロプラムがわかりやすくそして再利用性が高まる。 ここで注意してほしいのは再利用性を高めようとしてプログラミングをしてたわけではなく、 処理を書いてみてどうやらその処理で名前がつけられそうだという発想で関数を作ったということだ。 もちろん慣れてくれば設計段階で関数を考えることができるようになる。 しかし、最初のうちはそれが難しいだろう。 そこで常に今やっている処理に名前が付けられないか考ていくというのが妥当だろう。 あるいは共通している部分を抜き出す(抽象化する)というのも関数化するコツだ。 また、あまりに関数が多くなりすぎるのもやりすぎだ(ここではoutputなど)。 どの程度の粒度で関数化していくか?というのは慣れしかない。 (目安としてはその処理のコードがパッと見でわからないようだったら関数化する) といっても関数化してもプログラムがバグを生むわけでもないので恐れずに積極的に使っていってほしい。</p>
+<h1 id="プロトタイプ宣言">プロトタイプ宣言</h1>
+<p>さて、問題というのはプログラム上の欠陥というわけではないのだが、 多くの関数を定義しているとmain関数にたどり着くまでにたくさんスクロールしなくてはいけないということだ。 今は小さいプログラムだからいいが、200行規模以上の関数が5つあるだけですでに1000行になってしまう。 main関数を見つけるまでに1000行スクロールしなくてはいけない。 これはいやだろう。 もちろんこれを解決する文法はC++に備わっている。 まずは簡単な方からしよう。 重要な点は関数を使う人は引数と返り値の意味さえ知っていればいいということだ。 つまり、使う側にとって内部処理などどうでもいいのだ。</p>
+<pre><code>#include&lt;iostream&gt;
+
+
+//==============================プロトタイプ宣言===============================
+//入力を受ける関数
+int input();
+
+//EndNumberまでの和を求める関数
+int sum(int EndNumber);
+
+//SumResultを出力する関数
+void output(int SumResult);
+
+//===================================main関数===================================
+int main(){
+
+    const int InputData = input();
+    const int SumResult=sum(InputData);
+    output(SumResult);
+
+}
+
+//=====================================実装=====================================
+int input(){
+    std::cout &lt;&lt; &quot;nの値を入力してください。&quot;&lt;&lt; std::endl;
+    int input;
+    std::cin &gt;&gt; input;
+    return input;
+}
+
+int sum(int EndNumber){
+
+    //計算結果を入れる変数
+    int result=0;
+
+    for(int i=0;i&lt;=EndNumber;++i){
+        result+=i;
+    }
+
+    //returnで結果を返す
+    return result;
+}
+
+//出力する関数
+void output(int SumResult){
+    std::cout &lt;&lt; &quot;0からnまでの和は &quot; &lt;&lt; SumResult &lt;&lt; &quot;です&quot; &lt;&lt; std::endl;
+    return;//何も返さない
+}</code></pre>
+<p>だいぶmainの前がすっきりしただろう。 プロトタイプ宣言というのはこんな関数をプログラム内で使いますよという宣言でそこでの実装は必要ない。 実装は全部main関数の後ろでしている。</p>
+<h2 id="関数のオーバーロード多重定義">関数のオーバーロード(多重定義)</h2>
+<p>名前はいかついが、内容はそこまで複雑ではない。</p>
+<pre><code>#include&lt;iostream&gt;
+
+//aとbの和を返す関数
+int add(int a, int b);
+
+//===================================main関数===================================
+int main(){
+
+    std::cout &lt;&lt; add(3,5)&lt;&lt;std::endl;
+    std::cout &lt;&lt; add(3.3,5.5)&lt;&lt;std::endl;
+}
+
+//=====================================実装=====================================
+
+int add(int a, int b){
+    return a+b;
+}</code></pre>
+<p>当然add関数はint型を受け取りint型で返す関数なので後者は小数で答えが返ってこない。 そこで以下のようにdoubleバージョンの関数を定義してあげればよい。これだけだ。 オーバーロードとは結局「関数名は一緒で別の引数の関数を作れますよ」ということなので、 もちろん同じ名前の2つの引数の関数と3つの引数の関数を定義することも可能だ。</p>
+<pre><code>#include&lt;iostream&gt;
+
+
+//aとbの和を返す関数(int版)
+int add(int a, int b);
+//double版
+double add(double a, double b);
+
+//===================================main関数===================================
+int main(){
+
+    std::cout &lt;&lt; add(3,5)&lt;&lt;std::endl;
+    std::cout &lt;&lt; add(3.3,5.5)&lt;&lt;std::endl;
+}
+
+//=====================================実装=====================================
+
+int add(int a, int b){
+    return a+b;
+}
+
+double add(double a, double b){
+    return a+b;
+}</code></pre>
+<p>注意して欲しいのが、オーバーロードができるのは引数がことなる関数だけで、 返り値がことなる関数は定義できない。したがって以下はコンパイルエラーとなる。</p>
+<h2 id="演習問題">演習問題</h2>
+<ol style="list-style-type: decimal">
+<li>前回のサンプルコードでwhileの中にconst変数があった。一見複数回初期化できているように見える。これをスコープの観点から説明せよ。</li>
+<li>二乗を返す関数をint型、double型それぞれ実装せよ。</li>
+<li>以下のプログラム(コード1)を関数を用いて書き直せ
+<ul>
+<li>作成した関数をプロトタイプ宣言を用いて書きなおせ</li>
+</ul></li>
+</ol>
+<p>コード1</p>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;string&gt;
+
+int main(){
+
+    while(1){
+        std::cout&lt;&lt;&quot;0:すごいHaskell楽しく学ぼう!&quot;&lt;&lt;std::endl;
+        std::cout&lt;&lt;&quot;1:EffectiveC++&quot;&lt;&lt;std::endl;
+        std::cout&lt;&lt;&quot;2:ModernC++Design&quot;&lt;&lt;std::endl;
+
+        std::cout&lt;&lt;&quot;購入する本のIDを入力してください(-1で終了)&quot;&lt;&lt;std::endl;
+
+        int input;
+        std::cin&gt;&gt;input;
+        const int SelectedID=input;
+
+        if (SelectedID==0){
+            std::cout&lt;&lt;&quot;本当に「すごいHaskell楽しく学ぼう!」を購入しますか?(y/n)&quot;&lt;&lt;std::endl;
+        }else if (SelectedID==1){
+            std::cout&lt;&lt;&quot;本当に「EffectiveC++」を購入しますか?(y/n)&quot;&lt;&lt;std::endl;
+        }else if (SelectedID==2){
+            std::cout&lt;&lt;&quot;本当に「ModernC++Design」を購入しますか?(y/n)&quot;&lt;&lt;std::endl;
+        }else if (SelectedID==-1){
+            break;
+        }else{
+            std::cout&lt;&lt;&quot;入力が不正です&quot;&lt;&lt;std::endl;
+            continue;//ループをやり直す命令
+        }
+
+        while(true){
+            std::string input;
+            std::cin&gt;&gt;input;
+            const std::string SelectedCommand=input;
+
+            if (SelectedCommand==&quot;y&quot;){
+                std::cout&lt;&lt;&quot;ご購入ありがとうございます！&quot;&lt;&lt;std::endl;
+                break;
+            }else if (SelectedCommand==&quot;n&quot;){
+                std::cout&lt;&lt;&quot;そうですか...&quot;&lt;&lt;std::endl;
+                break;
+            }else{
+                std::cout&lt;&lt;&quot;入力が不正です。yかnを入力してください&quot;&lt;&lt;std::endl;
+            }
+
+        }
+
+    }
+
+
+    return 0;
+}</code></pre>
+</body>
+</html>
