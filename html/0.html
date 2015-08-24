@@ -341,46 +341,25 @@ C++の利用をしていく上でのマナーおよび便利な機能がある�
 <pre><code>const (型名) (const変数の名前)=(値);</code></pre>
 <p>という形で変数を定義する。 constをつけて定義した変数は中身を変更できないので 特にconst変数となる。 一見通常の変数とくらべると変更ができない(副作用がない) というのは縛りがきついように感じるかもしれないが、 あやまって変更してしまったことによるバグを防げ有用であるので 極力つけるようにしたい。 他にもいろいろな場面で変更できないことを明示するためにconstが使われる。 それだけC++ではconstは重要な概念である。</p>
 <table border="2">
-  <tr>
-    <th colspan="3">
-変数とconst変数の違い
-</th>
-  </tr>
-  <tr>
-    <th>
-項目
-</th>
-    <th>
-初期化　　
-</th>
-    <th>
-代入
-</th>
-  </tr>
-   <tr>
-    <td>
-変数
-</td>
-    <td>
-必要なし
-</td>
-    <td>
-可能
-</td>
-  </tr>
-  <tr>
-    <td>
-const変数
-</td>
-    <td>
-必ず必要
-</td>
-    <td>
-不可能
-</td>
-  </tr>
+<tr>
+<pre><code>&lt;th colspan=&quot;3&quot;&gt;変数とconst変数の違い&lt;/th&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;th&gt;項目&lt;/th&gt;
+&lt;th&gt;初期化　　&lt;/th&gt;
+&lt;th&gt;代入&lt;/th&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;変数&lt;/td&gt;
+&lt;td&gt;必要なし&lt;/td&gt;
+&lt;td&gt;可能&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;const変数&lt;/td&gt;
+&lt;td&gt;必ず必要&lt;/td&gt;
+&lt;td&gt;不可能&lt;/td&gt;</code></pre>
+</tr>
 </table>
-
 <p>また、この例では文字列型としてstd::stringを使っている。 これはC言語のchar[]を用いて文字列を表現する方法と違い 直感的に操作できる(+,==などが期待どおりの動作をしてくれる)ので 特に理由がない限りstd::stringをつかったほうがいいだろう。</p>
 <p>ところで初期化する際入れる値によって変数の型は基本的に判明する。 したがっていちいち型名を明示するのは煩雑である(今はまだ有り難みがわからないかもしれないが、そのうちかなり長い型がでてくる) そこでC++11からは型推論の機能が追加された。</p>
 <pre><code>const auto (const変数の名前)=(値);</code></pre>
